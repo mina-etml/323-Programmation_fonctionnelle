@@ -43,6 +43,7 @@ namespace PlaceDuMarche
 
                 if (quantity > mostWatermelon)
                 {
+                    mostWatermelon = int.Parse(seller.Quantity);
                     mostWatermelonSeller = seller;
                 }
             }
@@ -87,7 +88,7 @@ namespace PlaceDuMarche
 
         static int FindNumberOfProductSeller(List<string[]> lists, string produtSaled)
         {
-            int nuberOfPeachSeller = 0;
+            int nuberOfProductSeller = 0;
 
             foreach(string[] row in lists)
             {
@@ -95,13 +96,13 @@ namespace PlaceDuMarche
                 {
                     if (info == produtSaled)
                     {
-                        nuberOfPeachSeller++;
+                        nuberOfProductSeller++;
                     }
 
                 }
             }
 
-            return nuberOfPeachSeller;            
+            return nuberOfProductSeller;            
         }
 
         static List<WatermelonsSeller> GetSellers(List<string[]> rows, string produtSaled)
