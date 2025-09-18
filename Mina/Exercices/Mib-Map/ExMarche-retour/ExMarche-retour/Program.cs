@@ -165,6 +165,62 @@ ExportToCsv(newList, "export.csv");
 Console.WriteLine("Export terminé !");
 
 
+IEnumerable<Dashboard> Dashboard()
+{
+    var anonymisation = products.Select(p => new Dashboard
+    {
+        ProducerAnon = $"{p.Producer[0]}{p.Producer.Length}{p.Producer[p.Producer.Length - 1]}",
+
+        StockState = p.Quantity switch
+        {
+            < 10 => "Stock faible",
+            < 15 => "Stock normal",
+            _ => "Stock élevé" //default
+        },
+
+        Value = p.Quantity switch
+        {
+            < 10 => p.PricePerUnit += 15 / 100 * p.PricePerUnit,
+            < 15 => p.PricePerUnit += 5 / 100 * p.PricePerUnit,
+            _ => p.PricePerUnit //default
+        },
+        Rentability = ""
+    });
+
+        anonymisation = anonymisation.Select(p => new Dashboard() { 
+        ProducerAnon = p.ProducerAnon, 
+        StockState = p.StockState, 
+        Value = p.Value, 
+        Rentability = p.Value switch
+        {
+        > 100 => "Premium",
+        _ => "Standard"
+        }
+    });
+
+    return anonymisation;
+
+}
+
+var dashboard = Dashboard().ToList();
+
+//Write the dashboard to the console
+dashboard.ForEach(p => Console.WriteLine(p.ToString()));
+
+
+//Mib-Reduce
+var nbGroseilles = products
+    .Where(p => p.ProductName == "Groseilles")
+    .Sum(p => p.Quantity);
+
+var chiffreAffaire = products.GroupBy(p => p.Producer)
+    .Select(g => new {
+    Marchand = g.Key,
+    ChiffreAffaireTotal = g.Sum(p => p.Quantity * p.PricePerUnit)
+});
+
+Console.WriteLine(nbGroseilles);
+
 
 class P2
 {
@@ -176,6 +232,22 @@ class P2
     public override string ToString()
     {
         string st = ProducerAnon.ToString() + " " + Product.ToString() + " " + CA.ToString();
+        return st;
+    }
+}
+
+class Dashboard
+{
+    public string ProducerAnon { get; set; }
+    public string StockState { get; set; }
+    public double Value { get; set; }
+    public string Rentability { get; set; }
+
+
+    //in order to write to the console after
+   public override string ToString()
+    {
+        string st = ProducerAnon.ToString() + " " + StockState.ToString() + " " + Value.ToString() + " " + Rentability.ToString();
         return st;
     }
 }
