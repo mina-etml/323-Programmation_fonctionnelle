@@ -43,6 +43,8 @@ namespace Rando
                     }
                 }
             }
+
+            RandoReduce();
         }
 
         private void Rando_Form_Paint(object sender, PaintEventArgs e)
@@ -68,6 +70,35 @@ namespace Rando
             }). ToArray();
 
             this.CreateGraphics().DrawLines(myPen, points);
+        }
+
+        private void RandoReduce()
+        {
+            //calcul de la longueur du tracé
+            var distance = trackPoints.Aggregate((a, b) => {
+                    b.Distance = a.Distance+ a.GetDistanceFrom(b);
+                    return b;
+                });
+
+            //calcul du dénivelé positif
+            var positiv = trackPoints.Aggregate((a, b) => {
+                b.PosDeniv = (a.GetElevationFrom(b) > 0) ? (a.PosDeniv + a.GetElevationFrom(b)) : (a.PosDeniv) ;
+                return b;
+            });
+
+            //calcul du dénivelé negatif
+            var negativ = trackPoints.Aggregate((a, b) => {
+                b.NegDeniv = (a.GetElevationFrom(b) < 0) ? (a.NegDeniv + a.GetElevationFrom(b)) : (a.NegDeniv);
+                return b;
+            });
+
+
+            MessageBox.Show(distance.Distance+"km");
+            MessageBox.Show(positiv.PosDeniv + "positiv");
+            MessageBox.Show(negativ.NegDeniv + "positiv");
+
+
+
         }
     }
 }
